@@ -1,122 +1,161 @@
 .app-shell {
   min-height: 100vh;
+  background-color: #f8fafc;
 }
-
-
 
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 32px !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+  height: auto !important;
+  min-height: 64px !important;
+  line-height: normal !important;
+  z-index: 10;
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  line-height: 1.4 !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .app-content {
   padding: 24px 32px 48px;
-  background-color: #f5f7fb;
+  background-color: #f8fafc;
 }
 
-/* Tiêu đề mặc định màu xanh */
-.ant-card-head-title,
-.ant-modal-title,
-.ant-typography h1,
-.ant-typography h2,
-.ant-typography h3,
-.ant-typography h4,
-.ant-typography h5 {
-  color: #1890ff !important;
+/* Card Styling: Premium soft borders and shadows */
+.ant-card {
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.03) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.filters-card {
-  margin-bottom: 24px;
+.ant-card:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -2px rgba(0, 0, 0, 0.03) !important;
 }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+.ant-card-head {
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 0 20px !important;
 }
 
-.content-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
+.ant-card-head-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
 }
 
-.full-width {
-  grid-column: span 1;
+.ant-card-body {
+  padding: 20px !important;
 }
 
-.side-column {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* Custom Table Styles */
+.ant-table-wrapper .ant-table {
+  border-radius: 8px;
 }
 
-.notes-card textarea {
-  resize: none;
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
 
-.placeholder-card {
-  padding: 32px;
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid #f0f0f0;
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  font-size: 14px;
 }
 
-@media (max-width: 1024px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background-color: #f1f5f9 !important;
 }
 
-/* Custom Menu Styles - Highlight selected item */
-/* Custom Menu Styles - Premium Look */
+/* Buttons polish */
+.ant-btn {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border: none !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35) !important;
+}
+
+/* Custom Sider Menu */
 .custom-menu {
   background: transparent !important;
   padding: 0 12px;
 }
 
 .custom-menu .ant-menu-item {
-  margin: 4px 0 !important;
+  margin: 6px 0 !important;
   width: 100% !important;
-  border-radius: 12px !important;
-  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-  height: 48px !important;
-  line-height: 48px !important;
-  color: rgba(255, 255, 255, 0.65) !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease;
+  height: 44px !important;
+  line-height: 44px !important;
+  color: #94a3b8 !important;
+  font-weight: 500;
 }
 
 .custom-menu .ant-menu-item:hover {
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .custom-menu .ant-menu-item-selected {
-  background: linear-gradient(90deg, #1890ff 0%, #0050b3 100%) !important;
-  color: #fff !important;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3) !important;
 }
 
 .custom-menu .ant-menu-item-selected::after {
   display: none !important;
-  /* Remove default Ant Design active bar */
 }
 
 .custom-menu .ant-menu-item-icon {
-  font-size: 18px !important;
+  font-size: 17px !important;
   margin-right: 12px !important;
-  transition: all 0.3s;
 }
 
-.custom-menu .ant-menu-item-selected .ant-menu-item-icon {
-  transform: scale(1.1);
+/* Responsive grid layout */
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
 }
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}

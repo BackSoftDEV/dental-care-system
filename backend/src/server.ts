@@ -4,6 +4,8 @@ import express from 'express'
 import path from 'path'
 import fs from 'fs'
 import customerRoutes from './routes/customerRoutes'
+import authRoutes from './routes/authRoutes'
+import { requireAuth } from './middleware/authMiddleware'
 import './db'
 
 dotenv.config()
@@ -73,7 +75,8 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-app.use('/api/customers', customerRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/customers', requireAuth, customerRoutes)
 
 // Serve static files từ frontend/dist trong production
 if (process.env.NODE_ENV === 'production') {

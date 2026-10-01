@@ -10,6 +10,30 @@ const http = axios.create({
   },
 })
 
+// Tự động gắn Token xác thực vào mọi request
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('smilecare_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Tự động điều hướng về trang đăng nhập nếu phiên hết hạn (401)
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('smilecare_token')
+      localStorage.removeItem('smilecare_user')
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
 export interface CreateCustomerPayload {
   fullName: string
   gender: boolean

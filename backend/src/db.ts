@@ -93,5 +93,37 @@ if (schemaChanged || currentVersion < targetSchemaVersion) {
 
 db.pragma(`user_version = ${targetSchemaVersion}`)
 
+// Khởi tạo bảng users và tài khoản quản trị mặc định
+const createUsersTableSQL = `
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    passwordHash TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    fullName TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'admin',
+    failedAttempts INTEGER NOT NULL DEFAULT 0,
+    lockedUntil TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+`
+db.exec(createUsersTableSQL)
+
+// Tự động seed tài khoản admin nếu chưa có tài khoản nào
+import('./utils/security').then(({ hashPassword }) => {
+  const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }
+  if (userCount.count === 0) {
+    const { salt, hash } = hashPassword('SmileCare@2026')
+    db.prepare(`
+      INSERT INTO users (username, passwordHash, salt, fullName, role)
+      VALUES (?, ?, ?, ?, ?)
+    `).run('admin', hash, salt, 'Bác sĩ Quản trị', 'admin')
+    console.log('🔒 [BẢO MẬT] Đã tạo tài khoản quản trị mặc định: username=admin / password=SmileCare@2026')
+  }
+}).catch((err) => {
+  console.error('Lỗi khi khởi tạo tài khoản quản trị:', err)
+})
+
 export default db
 

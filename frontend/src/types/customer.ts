@@ -12,6 +12,7 @@ export interface Customer {
   createdAt?: string
   updatedAt?: string
   isDeleted?: boolean
+  visitCount?: number
 }
 
 export interface CustomerMetrics {

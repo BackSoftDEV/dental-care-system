@@ -176,16 +176,34 @@ const customerRepository = {
   },
 
   delete(id: number): boolean {
+    const cust = this.getById(id)
+    const now = new Date().toISOString()
+    if (cust && cust.phone) {
+      const info = db.prepare('UPDATE customers SET isDeleted = 1, updatedAt = ? WHERE phone = ?').run(
+        now,
+        cust.phone,
+      )
+      return info.changes > 0
+    }
     const info = db.prepare('UPDATE customers SET isDeleted = 1, updatedAt = ? WHERE id = ?').run(
-      new Date().toISOString(),
+      now,
       id,
     )
     return info.changes > 0
   },
 
   restore(id: number): boolean {
+    const cust = db.prepare('SELECT phone FROM customers WHERE id = ?').get(id) as { phone?: string } | undefined
+    const now = new Date().toISOString()
+    if (cust && cust.phone) {
+      const info = db.prepare('UPDATE customers SET isDeleted = 0, updatedAt = ? WHERE phone = ?').run(
+        now,
+        cust.phone,
+      )
+      return info.changes > 0
+    }
     const info = db.prepare('UPDATE customers SET isDeleted = 0, updatedAt = ? WHERE id = ?').run(
-      new Date().toISOString(),
+      now,
       id,
     )
     return info.changes > 0
