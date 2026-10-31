@@ -146,7 +146,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const PORT = Number(process.env.PORT) || 4000
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   if (process.env.NODE_ENV === 'production') {
     console.log(`✅ Ứng dụng chạy tại http://localhost:${PORT}`)
     console.log(`✅ Mở trình duyệt tại http://localhost:${PORT} để sử dụng`)
