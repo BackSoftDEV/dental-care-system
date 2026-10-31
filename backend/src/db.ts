@@ -114,12 +114,12 @@ db.exec(createUsersTableSQL)
 import('./utils/security').then(({ hashPassword }) => {
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }
   if (userCount.count === 0) {
-    const { salt, hash } = hashPassword('SmileCare@2026')
+    const { salt, hash } = hashPassword('123')
     db.prepare(`
       INSERT INTO users (username, passwordHash, salt, fullName, role)
       VALUES (?, ?, ?, ?, ?)
     `).run('admin', hash, salt, 'Bác sĩ Quản trị', 'admin')
-    console.log('🔒 [BẢO MẬT] Đã tạo tài khoản quản trị mặc định: username=admin / password=SmileCare@2026')
+    console.log('🔒 [BẢO MẬT] Đã tạo tài khoản quản trị mặc định: username=admin / password=123')
   }
 }).catch((err) => {
   console.error('Lỗi khi khởi tạo tài khoản quản trị:', err)
