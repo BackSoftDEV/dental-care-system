@@ -1,100 +1,139 @@
 # Hệ Thống Quản Lý Khách Hàng - SmileCare Dental CRM
 
-## 🚀 Hướng Dẫn Cài Đặt Nhanh
+Dự án quản lý thông tin khách hàng và dịch vụ nha khoa, vận hành toàn diện bằng **PM2 Process Manager**.
 
-### Cài Đặt Lần Đầu (Chỉ làm 1 lần)
+---
 
-1. **Cài đặt Node.js** (nếu chưa có)
-   - Tải từ: https://nodejs.org/ (khuyến nghị phiên bản LTS)
-   - Cài đặt và khởi động lại máy tính
+## 🚀 Cài Đặt và Khởi Động
 
-2. **Cài đặt ứng dụng**
-   - Double-click vào file `CAI-DAT-LAN-DAU.bat`
-   - Đợi 5-10 phút để hoàn tất
+### 1. Cài Đặt Ban Đầu (Chỉ làm 1 lần)
 
-### Sử Dụng Hàng Ngày
+1. Cài đặt các gói phụ thuộc (dependencies):
+   ```bash
+   # Cài đặt cho Backend
+   cd backend
+   npm install
 
-**Chỉ cần double-click vào file:** `KHOI-DONG-UNG-DUNG.bat`
+   # Cài đặt cho Frontend
+   cd ../frontend
+   npm install
 
-- Ứng dụng sẽ tự động mở trình duyệt tại: http://localhost:4000
-- Để dừng: Đóng cửa sổ "Backend Server" (cửa sổ màu đen)
+   cd ..
+   ```
+
+2. Cài đặt PM2 toàn cục (nếu máy chưa có):
+   ```bash
+   npm install -g pm2
+   ```
+
+---
+
+## ⚡ Vận Hành Với PM2
+
+Hệ thống được quản lý thông qua file cấu hình `ecosystem.config.cjs`.
+
+### Khởi động hệ thống
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+### Xem danh sách tiến trình đang chạy
+```bash
+pm2 ls
+```
+
+### Xem log hệ thống thời gian thực
+```bash
+pm2 logs
+# hoặc xem riêng backend:
+pm2 logs dental-backend
+# xem riêng frontend:
+pm2 logs dental-frontend
+```
+
+### Dừng hệ thống
+```bash
+pm2 stop ecosystem.config.cjs
+```
+
+### Khởi động lại hệ thống
+```bash
+pm2 restart ecosystem.config.cjs
+```
+
+---
+
+## 🔐 Tài Khoản Đăng Nhập Mặc Định
+
+| Mục | Thông tin |
+| :--- | :--- |
+| **URL Web** | http://localhost:5173 (Frontend) |
+| **Backend API** | http://localhost:4000/api |
+| **Tên đăng nhập** | `admin` |
+| **Mật khẩu** | `123` |
+
+---
+
+## ⚙️ Cấu Hình Tự Động Khởi Động Cùng Windows (Laptop Reboot)
+
+Để PM2 tự động bật toàn bộ hệ thống mỗi khi bạn bật máy tính:
+
+### Cách 1: Dùng thư mục Startup Windows (Không cần quyền Admin - Khuyên dùng)
+1. Đảm bảo các app đang chạy:
+   ```powershell
+   pm2 start ecosystem.config.cjs
+   ```
+2. Lưu lại danh sách app:
+   ```powershell
+   pm2 save
+   ```
+3. Tạo file tự khởi động ngầm vào thư mục Windows Startup:
+   ```powershell
+   $startupPath = [Environment]::GetFolderPath('Startup')
+   Set-Content -Path "$startupPath\pm2-autostart.vbs" -Value 'CreateObject("Wscript.Shell").Run "pm2 resurrect", 0, False'
+   ```
+
+### Cách 2: Dùng module `pm2-windows-startup` (Cần quyền Administrator)
+1. Mở PowerShell với quyền **Run as Administrator**:
+   ```powershell
+   npm install -g pm2-windows-startup
+   pm2-startup install
+   ```
+2. Lưu trạng thái PM2:
+   ```powershell
+   cd D:\Coder\dental-care-system
+   pm2 start ecosystem.config.cjs
+   pm2 save
+   ```
+
+---
 
 ## 📁 Cấu Trúc Thư Mục
 
 ```
-QLKH/
-├── CAI-DAT-LAN-DAU.bat      ← Chạy lần đầu tiên
-├── KHOI-DONG-UNG-DUNG.bat   ← Chạy mỗi khi mở laptop
-├── build-all.bat            ← Build lại khi có cập nhật
-├── HUONG-DAN-CAI-DAT.md     ← Hướng dẫn chi tiết
-├── backend/                 ← Backend API
-│   ├── data/               ← Database (KHÔNG XÓA!)
-│   └── dist/               ← Build output
-└── frontend/               ← Frontend React
-    └── dist/               ← Build output
+dental-care-system/
+├── ecosystem.config.cjs     ← File cấu hình khởi chạy PM2
+├── README.md                ← Hướng dẫn sử dụng chính
+├── HUONG-DAN-CAI-DAT.md     ← Tài liệu kỹ thuật
+├── backend/                 ← Backend API (Node.js/Express + SQLite)
+│   ├── data/               ← Database SQLite clinic.db (KHÔNG ĐƯỢC XÓA!)
+│   └── src/
+└── frontend/               ← Frontend (React + Vite + Ant Design)
+    └── src/
 ```
 
-## 🔧 Các File Script
-
-### 1. `CAI-DAT-LAN-DAU.bat`
-- Chạy lần đầu tiên sau khi nhận dự án
-- Tự động cài đặt dependencies và build ứng dụng
-
-### 2. `KHOI-DONG-UNG-DUNG.bat`
-- **File chính** - Chạy mỗi khi muốn sử dụng ứng dụng
-- Khởi động backend và mở trình duyệt tự động
-
-### 3. `build-all.bat`
-- Chạy khi có bản cập nhật mới
-- Build lại backend và frontend
+---
 
 ## 📝 Lưu Ý Quan Trọng
 
 ✅ **Nên làm:**
-- Lưu file `backend/data/clinic.db` (chứa toàn bộ dữ liệu)
-- Backup thư mục `backend/data/` định kỳ
+- Luôn định kỳ sao lưu file `backend/data/clinic.db` (chứa toàn bộ dữ liệu khách hàng).
+- Chạy `pm2 save` sau mỗi lần thay đổi danh sách app để PM2 nhớ cấu hình.
 
 ❌ **Không nên:**
-- Xóa thư mục `backend/data/`
-- Xóa thư mục `node_modules/`
-- Sửa code trong thư mục `dist/`
-
-## 🌐 Truy Cập Ứng Dụng
-
-- URL: http://localhost:4000
-- Port mặc định: 4000 (có thể thay đổi trong file `.env`)
-
-## 🐛 Xử Lý Lỗi Thường Gặp
-
-### Lỗi: "Node.js chưa được cài đặt"
-**Giải pháp:** Cài đặt Node.js từ https://nodejs.org/
-
-### Lỗi: "Port 4000 đã được sử dụng"
-**Giải pháp:** 
-- Đóng các ứng dụng khác đang dùng cổng 4000
-- Hoặc thay đổi PORT trong file `.env`
-
-### Trang web không mở được
-**Giải pháp:**
-- Kiểm tra cửa sổ "Backend Server" đã mở chưa
-- Thử mở thủ công: http://localhost:4000
-
-### Mất dữ liệu
-**Giải pháp:** 
-- Luôn backup file `backend/data/clinic.db`
-- Khôi phục từ backup nếu cần
-
-## 📞 Hỗ Trợ
-
-Nếu gặp vấn đề, vui lòng:
-1. Đọc file `HUONG-DAN-CAI-DAT.md` để xem hướng dẫn chi tiết
-2. Kiểm tra lại các bước cài đặt
-3. Liên hệ người phát triển để được hỗ trợ
+- Xóa thư mục `backend/data/` (sẽ mất toàn bộ dữ liệu).
+- Sửa trực tiếp cơ sở dữ liệu khi PM2 đang ghi dữ liệu mà không thông qua API.
 
 ---
 
-**Phiên bản:** 1.0.0  
-**Ngày tạo:** 2024
-
-
-
+**Phiên bản:** 2.0.0 (PM2 Managed)  

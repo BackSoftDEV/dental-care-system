@@ -1,70 +1,36 @@
-# Hướng Dẫn Cài Đặt và Sử Dụng
+# Hướng Dẫn Vận Hành Hệ Thống Bằng PM2
 
 ## Yêu Cầu Hệ Thống
 
-- Windows 7 trở lên
-- Node.js phiên bản 18 trở lên (tải tại: https://nodejs.org/)
-
-## Cài Đặt Lần Đầu
-
-1. **Kiểm tra Node.js:**
-   - Mở Command Prompt
-   - Gõ lệnh: `node --version`
-   - Nếu chưa có Node.js, tải và cài đặt từ: https://nodejs.org/
-
-2. **Cài đặt ứng dụng:**
-   - Double-click vào file `CAI-DAT-LAN-DAU.bat`
-   - Đợi quá trình cài đặt hoàn tất (có thể mất 5-10 phút)
-
-3. **Khởi động ứng dụng:**
-   - Double-click vào file `KHOI-DONG-UNG-DUNG.bat`
-   - Ứng dụng sẽ tự động mở trong trình duyệt tại: http://localhost:4000
-
-## Sử Dụng Hàng Ngày
-
-**Chỉ cần:**
-- Double-click vào file `KHOI-DONG-UNG-DUNG.bat`
-- Đợi 3-5 giây, trình duyệt sẽ tự động mở
-
-**Để dừng ứng dụng:**
-- Đóng cửa sổ "Backend Server" (cửa sổ màu đen)
-- Hoặc đóng trình duyệt
-
-## Cập Nhật Ứng Dụng
-
-Khi có bản cập nhật mới:
-
-1. Thay thế các file mới vào thư mục dự án
-2. Chạy lại file `build-all.bat` để build lại
-3. Sau đó chạy `KHOI-DONG-UNG-DUNG.bat` như bình thường
-
-## Lưu Ý
-
-- **Không xóa** thư mục `backend\data\` - đây là nơi lưu dữ liệu
-- **Không đóng** cửa sổ Backend Server khi đang sử dụng
-- Nếu cổng 4000 đã được sử dụng, thay đổi biến `PORT` trong file `.env` (nếu có)
-
-## Gặp Vấn Đề?
-
-1. **Ứng dụng không khởi động:**
-   - Kiểm tra xem đã cài Node.js chưa
-   - Chạy lại file `CAI-DAT-LAN-DAU.bat`
-
-2. **Trang web không mở được:**
-   - Kiểm tra xem cửa sổ Backend Server đã mở chưa
-   - Thử mở trình duyệt thủ công: http://localhost:4000
-
-3. **Lỗi cài đặt:**
-   - Đảm bảo kết nối Internet ổn định
-   - Kiểm tra quyền Administrator (click chuột phải > Run as administrator)
-
-## Thông Tin Kỹ Thuật
-
-- Backend chạy trên cổng: 4000
-- Database: SQLite (lưu trong `backend\data\clinic.db`)
-- Frontend: React + Vite
+- Hệ điều hành: Windows 10/11 trở lên
+- Node.js: Phiên bản 18+ (tải tại: https://nodejs.org/)
+- PM2: `npm install -g pm2`
 
 ---
 
-**Liên hệ hỗ trợ nếu cần thiết!**
+## Các Lệnh Quản Trị Hệ Thống Thường Dùng
 
+Tất cả các thao tác đều thực hiện từ thư mục gốc của dự án (`d:\Coder\dental-care-system`):
+
+| Thao tác | Lệnh thực hiện |
+| :--- | :--- |
+| **Bật toàn bộ hệ thống** | `pm2 start ecosystem.config.cjs` |
+| **Kiểm tra trạng thái các tiến trình** | `pm2 ls` |
+| **Xem log trực tiếp** | `pm2 logs` |
+| **Xem log riêng backend** | `pm2 logs dental-backend` |
+| **Xem log riêng frontend** | `pm2 logs dental-frontend` |
+| **Khởi động lại toàn bộ** | `pm2 restart ecosystem.config.cjs` |
+| **Tạm dừng hệ thống** | `pm2 stop ecosystem.config.cjs` |
+| **Xóa app khỏi danh sách PM2** | `pm2 delete ecosystem.config.cjs` |
+| **Lưu trạng thái hiện tại** | `pm2 save` |
+
+---
+
+## Thông Tin Kỹ Thuật
+
+- **Frontend:** React + Vite, chạy tại cổng `5173`.
+- **Backend:** Node.js + Express + TypeScript, chạy tại cổng `4000`.
+- **Cơ sở dữ liệu:** SQLite lưu tại `backend/data/clinic.db`.
+- **Đăng nhập mặc định:**
+  - Tài khoản: `admin`
+  - Mật khẩu: `123`
