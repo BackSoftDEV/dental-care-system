@@ -1,6 +1,8 @@
 import {
-  AppstoreOutlined,
+  CheckOutlined,
+  CloseOutlined,
   DeleteOutlined,
+  EditOutlined,
   PlusOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
@@ -24,7 +26,6 @@ import {
 } from 'antd'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { customerApi } from '../../../services/customerApi'
 import { serviceStorage, type DentalServiceItem } from '../../../services/serviceStorage'
 import type { Customer } from '../../../types/customer'
@@ -49,7 +50,6 @@ export default function CustomerFormModal({
   editingCustomer,
   onSuccess,
 }: CustomerFormModalProps) {
-  const navigate = useNavigate()
   const [form] = Form.useForm<CustomerFormValues>()
   const isEditing = Boolean(editingCustomer)
 
@@ -63,6 +63,9 @@ export default function CustomerFormModal({
   const [services, setServices] = useState<DentalServiceItem[]>(() => serviceStorage.getAll())
   const [newServiceName, setNewServiceName] = useState('')
   const [newServicePrice, setNewServicePrice] = useState<number | null>(null)
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null)
+  const [editingServiceName, setEditingServiceName] = useState('')
+  const [editingServicePrice, setEditingServicePrice] = useState<number | null>(null)
 
   const MAX_ADDRESS_PRESETS = 10
   const DEFAULT_ADDRESSES = ['Tại phòng khám', 'Hà Nội', 'Nội thành']
@@ -291,7 +294,34 @@ export default function CustomerFormModal({
 
   const handleResetQuickServices = () => {
     serviceStorage.reset()
+    handleCancelEditQuickService()
     message.info('Đã khôi phục bảng giá mặc định')
+  }
+
+  const handleStartEditQuickService = (service: DentalServiceItem) => {
+    setEditingServiceId(service.id)
+    setEditingServiceName(service.name)
+    setEditingServicePrice(service.price)
+  }
+
+  const handleCancelEditQuickService = () => {
+    setEditingServiceId(null)
+    setEditingServiceName('')
+    setEditingServicePrice(null)
+  }
+
+  const handleSaveEditQuickService = (id: string) => {
+    const trimmed = editingServiceName.trim()
+    if (!trimmed) {
+      message.warning('Vui lòng nhập tên dịch vụ')
+      return
+    }
+    serviceStorage.update(id, {
+      name: trimmed,
+      price: Number(editingServicePrice || 0),
+    })
+    message.success('Đã cập nhật dịch vụ thành công')
+    handleCancelEditQuickService()
   }
 
   const handleSubmit = async () => {
@@ -594,27 +624,15 @@ export default function CustomerFormModal({
                   <Text type="secondary" style={{ fontSize: 12 }}>
                     Dịch vụ:
                   </Text>
-                  <Space size={8}>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<AppstoreOutlined />}
-                      style={{ fontSize: 11, padding: 0, height: 'auto', color: '#0284c7' }}
-                      onClick={() => window.open('/services', '_blank')}
-                      title="Mở trang quản lý dịch vụ ở tab mới để không mất thông tin đang nhập"
-                    >
-                      📋 Quản lý dịch vụ (tab mới)
-                    </Button>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<SettingOutlined />}
-                      style={{ fontSize: 11, padding: 0, height: 'auto', color: '#64748b' }}
-                      onClick={() => setServiceSettingsOpen(true)}
-                    >
-                      ⚙️ Cài đặt nhanh
-                    </Button>
-                  </Space>
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<SettingOutlined />}
+                    style={{ fontSize: 11, padding: 0, height: 'auto', color: '#0284c7' }}
+                    onClick={() => setServiceSettingsOpen(true)}
+                  >
+                    ⚙️ Cài đặt danh mục & đơn giá
+                  </Button>
                 </div>
                 <Space size={[4, 6]} wrap>
                   {services.map((service) => {
@@ -712,16 +730,26 @@ export default function CustomerFormModal({
           </div>
         }
         open={serviceSettingsOpen}
-        onCancel={() => setServiceSettingsOpen(false)}
+        onCancel={() => {
+          handleCancelEditQuickService()
+          setServiceSettingsOpen(false)
+        }}
         footer={[
           <Button key="reset" onClick={handleResetQuickServices}>
             Khôi phục mặc định
           </Button>,
-          <Button key="close" type="primary" onClick={() => setServiceSettingsOpen(false)}>
+          <Button
+            key="close"
+            type="primary"
+            onClick={() => {
+              handleCancelEditQuickService()
+              setServiceSettingsOpen(false)
+            }}
+          >
             Đã xong
           </Button>,
         ]}
-        width={580}
+        width={620}
         centered
       >
         <Card size="small" style={{ marginBottom: 14, background: '#f8fafc', border: '1px solid #e2e8f0' }} title="Thêm dịch vụ mới">
@@ -766,36 +794,99 @@ export default function CustomerFormModal({
               title: 'Tên dịch vụ',
               dataIndex: 'name',
               key: 'name',
-              render: (name: string) => <Text strong>{name}</Text>,
+              render: (name: string, record) => {
+                if (editingServiceId === record.id) {
+                  return (
+                    <Input
+                      size="small"
+                      value={editingServiceName}
+                      onChange={(e) => setEditingServiceName(e.target.value)}
+                      onPressEnter={() => handleSaveEditQuickService(record.id)}
+                      autoFocus
+                    />
+                  )
+                }
+                return <Text strong>{name}</Text>
+              },
             },
             {
               title: 'Đơn giá mẫu',
               dataIndex: 'price',
               key: 'price',
-              width: 140,
-              render: (price: number) => (
-                <Text style={{ color: price > 0 ? '#0284c7' : '#10b981', fontWeight: 600 }}>
-                  {price > 0 ? `${formatCurrencyInput(price)} đ` : 'Miễn phí'}
-                </Text>
-              ),
+              width: 150,
+              render: (price: number, record) => {
+                if (editingServiceId === record.id) {
+                  return (
+                    <InputNumber
+                      size="small"
+                      style={{ width: '100%' }}
+                      min={0}
+                      step={50000}
+                      value={editingServicePrice}
+                      onChange={(val) => setEditingServicePrice(val)}
+                      formatter={(value) => formatCurrencyInput(value ?? '')}
+                      parser={(value) => parseCurrencyInput(value) ?? 0}
+                      onPressEnter={() => handleSaveEditQuickService(record.id)}
+                    />
+                  )
+                }
+                return (
+                  <Text style={{ color: price > 0 ? '#0284c7' : '#10b981', fontWeight: 600 }}>
+                    {price > 0 ? `${formatCurrencyInput(price)} đ` : 'Miễn phí'}
+                  </Text>
+                )
+              },
             },
             {
-              title: 'Xóa',
+              title: 'Thao tác',
               key: 'action',
-              width: 60,
+              width: 80,
               align: 'center',
-              render: (_, record) => (
-                <Popconfirm
-                  title="Xóa dịch vụ này?"
-                  description="Dịch vụ sẽ bị gỡ khỏi danh sách chọn nhanh."
-                  onConfirm={() => handleDeleteQuickService(record.id)}
-                  okText="Xóa"
-                  cancelText="Hủy"
-                  okButtonProps={{ danger: true }}
-                >
-                  <Button size="small" type="text" danger icon={<DeleteOutlined />} />
-                </Popconfirm>
-              ),
+              render: (_, record) => {
+                if (editingServiceId === record.id) {
+                  return (
+                    <Space size={2}>
+                      <Button
+                        size="small"
+                        type="text"
+                        style={{ color: '#16a34a' }}
+                        icon={<CheckOutlined />}
+                        onClick={() => handleSaveEditQuickService(record.id)}
+                        title="Lưu"
+                      />
+                      <Button
+                        size="small"
+                        type="text"
+                        style={{ color: '#64748b' }}
+                        icon={<CloseOutlined />}
+                        onClick={handleCancelEditQuickService}
+                        title="Hủy"
+                      />
+                    </Space>
+                  )
+                }
+                return (
+                  <Space size={2}>
+                    <Button
+                      size="small"
+                      type="text"
+                      icon={<EditOutlined style={{ color: '#0284c7' }} />}
+                      onClick={() => handleStartEditQuickService(record)}
+                      title="Sửa dịch vụ"
+                    />
+                    <Popconfirm
+                      title="Xóa dịch vụ này?"
+                      description="Dịch vụ sẽ bị gỡ khỏi danh sách chọn nhanh."
+                      onConfirm={() => handleDeleteQuickService(record.id)}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                      okButtonProps={{ danger: true }}
+                    >
+                      <Button size="small" type="text" danger icon={<DeleteOutlined />} title="Xóa dịch vụ" />
+                    </Popconfirm>
+                  </Space>
+                )
+              },
             },
           ]}
         />

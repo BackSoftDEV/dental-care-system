@@ -96,9 +96,9 @@ export default function CustomerTable({
       title: 'Khách hàng',
       dataIndex: 'fullName',
       key: 'fullName',
-      width: 230,
+      width: 210,
       render: (_: string, record: Customer) => (
-        <Space size={12} align="center">
+        <Space size={10} align="center">
           <Tooltip title="Bấm để xem chi tiết hồ sơ bệnh nhân">
             <Avatar
               style={{
@@ -113,13 +113,14 @@ export default function CustomerTable({
             </Avatar>
           </Tooltip>
           <Space direction="vertical" size={2}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
               <Link
                 onClick={() => onViewDetails(record)}
                 style={{
                   fontWeight: 600,
                   color: '#0f172a',
                   fontSize: 14,
+                  whiteSpace: 'nowrap',
                 }}
                 title="Bấm để xem chi tiết hồ sơ bệnh nhân"
               >
@@ -154,7 +155,8 @@ export default function CustomerTable({
       title: 'Giới tính',
       dataIndex: 'gender',
       key: 'gender',
-      width: 90,
+      width: 80,
+      align: 'center',
       render: (value: Customer['gender']) =>
         value ? (
           <Tag color="processing" style={{ borderRadius: 6, margin: 0 }}>Nam</Tag>
@@ -166,7 +168,8 @@ export default function CustomerTable({
       title: 'Tuổi',
       dataIndex: 'age',
       key: 'age',
-      width: 90,
+      width: 80,
+      align: 'center',
       render: (value: number | null | undefined, record: Customer) => {
         if (value !== null && value !== undefined) {
           return `${value} tuổi`
@@ -184,6 +187,7 @@ export default function CustomerTable({
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
+      width: 200,
       ellipsis: true,
       render: (val?: string) => <Text style={{ color: '#475569' }}>{val || '—'}</Text>,
     },
@@ -191,7 +195,7 @@ export default function CustomerTable({
       title: 'Cách xử lý',
       dataIndex: 'treatment',
       key: 'treatment',
-      width: 230,
+      minWidth: 260,
       render: (val?: string) => {
         if (!val) return '—'
         const services = val
@@ -201,7 +205,7 @@ export default function CustomerTable({
 
         if (services.length === 0) return '—'
 
-        if (services.length <= 2) {
+        if (services.length <= 3) {
           return (
             <Space size={[4, 4]} wrap>
               {services.map((item, idx) => (
@@ -213,7 +217,7 @@ export default function CustomerTable({
                     fontSize: 12,
                     margin: 0,
                     fontWeight: 500,
-                    maxWidth: 190,
+                    maxWidth: 240,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -227,8 +231,8 @@ export default function CustomerTable({
           )
         }
 
-        const visibleServices = services.slice(0, 2)
-        const remaining = services.length - 2
+        const visibleServices = services.slice(0, 3)
+        const remaining = services.length - 3
 
         return (
           <Tooltip
@@ -256,7 +260,7 @@ export default function CustomerTable({
                     fontSize: 12,
                     margin: 0,
                     fontWeight: 500,
-                    maxWidth: 130,
+                    maxWidth: 200,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -287,7 +291,8 @@ export default function CustomerTable({
       title: 'Thành tiền',
       dataIndex: 'amount',
       key: 'amount',
-      width: 140,
+      width: 130,
+      align: 'right',
       render: (value?: number) => (
         <Text strong style={{ color: '#059669', fontSize: 13 }}>
           {(value ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
@@ -299,7 +304,8 @@ export default function CustomerTable({
       title: 'Cập nhật',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
-      width: 150,
+      width: 140,
+      align: 'center',
       render: (value?: string) => (
         <Text type="secondary" style={{ fontSize: 12 }}>
           {value ? dayjs(value).format('HH:mm DD/MM/YYYY') : '—'}
@@ -310,7 +316,8 @@ export default function CustomerTable({
       title: 'Thao tác',
       key: 'actions',
       fixed: 'right',
-      width: 170,
+      width: 150,
+      align: 'center',
       render: (_: unknown, record: Customer) => (
         <Space size={4}>
           <Button
@@ -391,7 +398,8 @@ export default function CustomerTable({
                     title: 'Thao tác',
                     key: 'actions',
                     fixed: 'right',
-                    width: 170,
+                    width: 150,
+                    align: 'center',
                     render: (_: unknown, record: Customer) => (
                       <Space size={4}>
                         <Button
